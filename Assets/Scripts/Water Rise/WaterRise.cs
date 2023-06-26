@@ -7,7 +7,7 @@ public class WaterRise : MonoBehaviour
     public int WaterLevel;
     public int MaxWaterLevel = 10;
     public GameObject[] levelIndicator;
-    public LooseManger looseManager;
+    public LooseManager looseManager;
     public FloodManager floodManager; 
     
 
@@ -41,7 +41,7 @@ public class WaterRise : MonoBehaviour
 
         if (WaterLevel >= MaxWaterLevel)
         {
-            looseManager.GameOver("You have lost the game"); 
+            looseManager.GameOver("You have lost the game");
         }
         // Unlock card slots based on water level
         if (WaterLevel >= 1)

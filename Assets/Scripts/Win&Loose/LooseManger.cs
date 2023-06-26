@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement; 
+using UnityEngine.SceneManagement;
 
-public class LooseManger : MonoBehaviour
+public class LooseManager : MonoBehaviour
 {
-    
-    public GameObject gameOverPanel; 
+    public GameObject gameOverPanel;
 
     public void GameOver(string message)
     {
-        Debug.Log("Game Over" + message);
-       
+        Debug.Log("Game Over: " + message);
+
         gameOverPanel.SetActive(true);
 
-        //Pausing the game. 
-        Time.timeScale = 0f; 
+        // Pausing the game.
+        Time.timeScale = 0f;
 
-        //Restarting the game
+        // Restarting the game
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

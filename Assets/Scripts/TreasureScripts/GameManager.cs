@@ -11,20 +11,19 @@ public class GameManager : MonoBehaviour
     public bool[] availableCardSlots;
 
     public GameObject collectTreasureButton;
-    public GameObject[] treasureSlot; // Reference to the treasure slot game object
+    public GameObject[] treasureSlot;
+    public GameObject treasureTile1;
+    public GameObject treasureTile2;
 
-    // Define the treasure types
-    public enum TreasureType { Fire, Water, Rock, Air }
+    public enum TreasureType { None, Fire, Water, Rock, Air }
     public TreasureType currentTreasureType;
-    public winManager WinManager; 
+    public winManager winManager;
 
-    // Counters for each treasure type
     private int fireCount;
     private int waterCount;
     private int rockCount;
     private int airCount;
 
-    // Replace these with the actual prefab references
     public GameObject fireTreasurePrefab;
     public GameObject waterTreasurePrefab;
     public GameObject rockTreasurePrefab;
@@ -52,17 +51,32 @@ public class GameManager : MonoBehaviour
                     availableCardSlots[i] = false;
                     deck.Remove(randCard);
 
-                    // Increase the corresponding treasure count
-                    IncrementTreasureCount(randCard.treasureObject);
+                    if (randCard.treasureObject != TreasureType.None)
+                    {
+                        IncrementTreasureCount(currentTreasureType);
 
-                    // Check if the treasure count reaches 4
-                    if (IsTreasureComplete())
-                        collectTreasureButton.SetActive(true);
+                        if (IsTreasureComplete())
+                            collectTreasureButton.SetActive(true);
+
+                        if (currentTreasureType == TreasureType.Fire)
+                            CheckSunkTreasureTile(treasureTile1, treasureTile2, fireCount);
+                        else if (currentTreasureType == TreasureType.Water)
+                            CheckSunkTreasureTile(treasureTile1, treasureTile2, waterCount);
+                        else if (currentTreasureType == TreasureType.Rock)
+                            CheckSunkTreasureTile(treasureTile1, treasureTile2, rockCount);
+                        else if (currentTreasureType == TreasureType.Air)
+                            CheckSunkTreasureTile(treasureTile1, treasureTile2, airCount);
+                    }
 
                     return;
                 }
             }
         }
+    }
+
+    internal void GameOver(string v)
+    {
+        throw new System.NotImplementedException();
     }
 
     private void IncrementTreasureCount(TreasureType treasureType)
@@ -99,12 +113,28 @@ public class GameManager : MonoBehaviour
         }
         return false;
     }
+
+    private void CheckSunkTreasureTile(GameObject treasureTile1, GameObject treasureTile2, int treasureCount)
+    {
+        if (treasureTile1 != null && treasureTile2 != null)
+        {
+            if (treasureCount >= 2)
+            {
+                if (!treasureTile1.GetComponent<TreasureScript>().IsSunk() || !treasureTile2.GetComponent<TreasureScript>().IsSunk())
+                {
+                    collectTreasureButton.SetActive(false);
+                    ResetCardSlots();
+                }
+            }
+        }
+    }
+
     public void CollectTreasure()
     {
         Debug.Log("Treasure Collected!");
 
-        // Move the treasure object to the treasure slot
-        GameObject treasure = Instantiate(GetTreasurePrefab(currentTreasureType), treasureSlot[(int)currentTreasureType].transform);
+        GameObject gameObject1 = Instantiate(GetTreasurePrefab(currentTreasureType), treasureSlot[(int)currentTreasureType].transform);
+        GameObject treasure = gameObject1;
         treasure.transform.localPosition = Vector3.zero;
 
         collectTreasureButton.SetActive(false);
@@ -112,7 +142,7 @@ public class GameManager : MonoBehaviour
 
         if (IsTreasureComplete())
         {
-            WinManager.YOUWIN(" You Collected All Treasures!");
+            winManager.YOUWIN(" You Collected All Treasures!");
         }
     }
 
@@ -121,14 +151,17 @@ public class GameManager : MonoBehaviour
         switch (treasureType)
         {
             case TreasureType.Fire:
-                return fireTreasurePrefab; // Replace with the actual fire treasure prefab
+                return fireTreasurePrefab;
             case TreasureType.Water:
-                return waterTreasurePrefab; // Replace with the actual water treasure prefab
+                return waterTreasurePrefab;
             case TreasureType.Rock:
-                return rockTreasurePrefab; // Replace with the actual rock treasure
+                return rockTreasurePrefab;
+            case TreasureType.Air:
+                return airTreasurePrefab;
         }
-        return null; 
+        return null;
     }
+
     public void ResetCardSlots()
     {
         foreach (Transform cardSlot in cardSlots)
@@ -143,5 +176,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void MoveToDiscardPile(CardMovementScript card)
+    {
+        discardPile.Add(card);
+        card.gameObject.SetActive(false);
+    }
 }
-

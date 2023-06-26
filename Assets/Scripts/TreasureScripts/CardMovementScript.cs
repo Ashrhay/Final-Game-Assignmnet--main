@@ -9,6 +9,7 @@ public class CardMovementScript : MonoBehaviour
     public int handIndex;
     private GameManager gm;
     public GameManager.TreasureType treasureObject; // Updated variable name
+    internal bool isTreasureObject;
 
     private void Start()
     {
@@ -33,5 +34,6 @@ public class CardMovementScript : MonoBehaviour
         gm.discardPile.Add(this);
         gameObject.SetActive(false);
         gm.CollectTreasure();
+       
     }
 }

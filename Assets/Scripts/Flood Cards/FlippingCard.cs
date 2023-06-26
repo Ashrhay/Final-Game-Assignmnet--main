@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +19,8 @@ public class FlippingCard : MonoBehaviour
 
     [SerializeField]
     public Button ShoreUp;
-    public FloodManager floodManager;
+    public GameObject islandTile; // Reference to the corresponding island tile GameObject
+    public FloodManager floodManager; // Reference to the FloodManager script
 
     public int flag = 3; // Initial value of the flag (2 for card front, 1 for card back)
 
@@ -31,12 +31,13 @@ public class FlippingCard : MonoBehaviour
         cardBackIsActive = false;
         UpdateCardState(); // Update the card state based on the initial flag value
 
-        floodManager = GetComponentInParent<FloodManager>(); // Get the FloodManager component in the parent GameObject
+        floodManager = FindObjectOfType<FloodManager>(); // Find the FloodManager script in the scene
     }
 
     public void StartFlip()
     {
         StartCoroutine(CalculateFlip());
+        Debug.Log("island tile is flipped");
     }
 
     public void Flip()
@@ -63,6 +64,7 @@ public class FlippingCard : MonoBehaviour
             if (timer == 90 || timer == -90)
             {
                 Flip();
+
             }
         }
 
@@ -87,14 +89,23 @@ public class FlippingCard : MonoBehaviour
             Debug.Log("Island tile has been flipped");
 
             // Check if the corresponding island tile should sink
-            int slotIndex = transform.GetSiblingIndex();
-            if (!floodManager.availableCardSlots[slotIndex])
+            if (islandTile != null)
             {
-                floodManager.SinkIslandTile(gameObject);
+                islandtileController tileController = islandTile.GetComponent<islandtileController>();
+                if (tileController != null)
+                {
+                    tileController.SinkIslandTile();
+                }
             }
 
+            // Move the button's game object to the discard pile
+            if (floodManager != null)
+            {
+                floodManager.MoveToDiscardPile(gameObject);
+            }
         }
     }
+
     public void OnDisable()
     {
         if (flag == 1)

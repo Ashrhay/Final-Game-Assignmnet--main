@@ -11,7 +11,9 @@ public class FloodCardMovement : MonoBehaviour
 
     public int handIndex;
 
-    public  FloodManager fm;
+    private  FloodManager fm;
+
+    public bool isTreasureObject { get; internal set; }
 
     private void Start()
     {
@@ -32,13 +34,9 @@ public class FloodCardMovement : MonoBehaviour
         }
     }
 
-    void MoveToDiscardPile()
+    private void MoveToDiscardPile()
     {
-        fm.discardPile.Add(this);
-
-        //Deactivating the card after it is transferred into the discard pile. 
-        gameObject.SetActive(false);
-
-        fm.DrawCards(); 
+        fm.MoveToDiscardPile(this);
     }
 }
+
